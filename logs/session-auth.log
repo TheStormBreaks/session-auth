@@ -1,0 +1,223 @@
+2026-09-30 14:14:53.016 INFO  [Test worker] com.example.sessionauth.controller.AuthControllerTest - Starting AuthControllerTest using Java 21.0.11 with PID 34984 (started by m2som in C:\Users\m2som\.gemini\antigravity\scratch\session-auth)
+2026-09-30 14:14:53.027 INFO  [Test worker] com.example.sessionauth.controller.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-09-30 14:14:53.245 INFO  [background-preinit] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-09-30 14:14:53.757 INFO  [Test worker] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-30 14:14:53.835 INFO  [Test worker] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 56 ms. Found 1 JPA repository interface.
+2026-09-30 14:14:54.244 INFO  [Test worker] org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-30 14:14:54.317 INFO  [Test worker] org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-09-30 14:14:54.888 INFO  [Test worker] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-30 14:14:54.927 INFO  [Test worker] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-09-30 14:14:55.098 INFO  [Test worker] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:sessionauth user=SA
+2026-09-30 14:14:55.101 INFO  [Test worker] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-09-30 14:14:55.166 INFO  [Test worker] org.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:sessionauth]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: SESSIONAUTH/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-30 14:14:56.049 INFO  [Test worker] org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-30 14:14:56.129 INFO  [Test worker] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-30 14:14:56.234 INFO  [Test worker] org.springframework.data.jpa.repository.query.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-30 14:14:56.520 WARN  [Test worker] org.springframework.boot.jpa.autoconfigure.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-30 14:14:57.026 INFO  [Test worker] com.example.sessionauth.controller.AuthControllerTest - Started AuthControllerTest in 4.391 seconds (process running for 6.09)
+2026-09-30 14:14:58.300 INFO  [Test worker] com.example.sessionauth.controller.AuthController - Signup succeeded for username=newuser
+2026-09-30 14:14:58.374 INFO  [Test worker] com.example.sessionauth.controller.AuthController - Session renewed for username=activeuser
+2026-09-30 14:14:58.384 WARN  [Test worker] com.example.sessionauth.controller.AuthController - Signup validation failed for username=null
+2026-09-30 14:14:58.389 WARN  [Test worker] com.example.sessionauth.controller.AuthController - Session renewal failed because the session is expired
+2026-09-30 14:14:58.398 INFO  [Test worker] org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.sessionauth.service.UserServiceTest]: UserServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-30 14:14:58.408 INFO  [Test worker] org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.sessionauth.SessionAuthApplication for test class com.example.sessionauth.service.UserServiceTest
+2026-09-30 14:14:58.411 INFO  [Test worker] org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.sessionauth.service.UserServiceTest]: UserServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-30 14:14:58.412 INFO  [Test worker] org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.sessionauth.SessionAuthApplication for test class com.example.sessionauth.service.UserServiceTest
+2026-09-30 14:14:58.614 INFO  [SpringApplicationShutdownHook] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-30 14:14:58.616 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-09-30 14:14:58.617 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-09-30 14:21:41.287 INFO  [Test worker] com.example.sessionauth.controller.AuthControllerTest - Starting AuthControllerTest using Java 21.0.11 with PID 21512 (started by m2som in C:\Users\m2som\.gemini\antigravity\scratch\session-auth)
+2026-09-30 14:21:41.298 INFO  [Test worker] com.example.sessionauth.controller.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-09-30 14:21:41.513 INFO  [background-preinit] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-09-30 14:21:42.042 INFO  [Test worker] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-30 14:21:42.109 INFO  [Test worker] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 56 ms. Found 1 JPA repository interface.
+2026-09-30 14:21:42.541 INFO  [Test worker] org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-30 14:21:42.616 INFO  [Test worker] org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-09-30 14:21:43.154 INFO  [Test worker] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-30 14:21:43.194 INFO  [Test worker] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-09-30 14:21:43.361 INFO  [Test worker] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:sessionauth user=SA
+2026-09-30 14:21:43.363 INFO  [Test worker] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-09-30 14:21:43.425 INFO  [Test worker] org.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:sessionauth]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: SESSIONAUTH/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-30 14:21:44.336 INFO  [Test worker] org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-30 14:21:44.410 INFO  [Test worker] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-30 14:21:44.507 INFO  [Test worker] org.springframework.data.jpa.repository.query.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-30 14:21:44.825 WARN  [Test worker] org.springframework.boot.jpa.autoconfigure.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-30 14:21:45.375 INFO  [Test worker] com.example.sessionauth.controller.AuthControllerTest - Started AuthControllerTest in 4.473 seconds (process running for 6.478)
+2026-09-30 14:21:46.617 INFO  [Test worker] com.example.sessionauth.controller.AuthController - Signup succeeded for username=newuser
+2026-09-30 14:21:46.696 INFO  [Test worker] com.example.sessionauth.controller.AuthController - Session renewed for username=activeuser
+2026-09-30 14:21:46.706 WARN  [Test worker] com.example.sessionauth.controller.AuthController - Signup validation failed for username=null
+2026-09-30 14:21:46.710 WARN  [Test worker] com.example.sessionauth.controller.AuthController - Session renewal failed because the session is expired
+2026-09-30 14:21:46.719 INFO  [Test worker] org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.sessionauth.service.UserServiceTest]: UserServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-30 14:21:46.731 INFO  [Test worker] org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.sessionauth.SessionAuthApplication for test class com.example.sessionauth.service.UserServiceTest
+2026-09-30 14:21:46.733 INFO  [Test worker] org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.sessionauth.service.UserServiceTest]: UserServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-30 14:21:46.735 INFO  [Test worker] org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.sessionauth.SessionAuthApplication for test class com.example.sessionauth.service.UserServiceTest
+2026-09-30 14:21:46.932 INFO  [SpringApplicationShutdownHook] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-30 14:21:46.934 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-09-30 14:21:46.935 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-09-30 14:22:35.134 INFO  [Test worker] com.example.sessionauth.controller.AuthControllerTest - Starting AuthControllerTest using Java 21.0.11 with PID 46172 (started by m2som in C:\Users\m2som\.gemini\antigravity\scratch\session-auth)
+2026-09-30 14:22:35.146 INFO  [Test worker] com.example.sessionauth.controller.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-09-30 14:22:35.350 INFO  [background-preinit] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-09-30 14:22:35.885 INFO  [Test worker] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-30 14:22:35.950 INFO  [Test worker] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 54 ms. Found 1 JPA repository interface.
+2026-09-30 14:22:36.379 INFO  [Test worker] org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-30 14:22:36.458 INFO  [Test worker] org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-09-30 14:22:37.004 INFO  [Test worker] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-30 14:22:37.042 INFO  [Test worker] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-09-30 14:22:37.210 INFO  [Test worker] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:sessionauth user=SA
+2026-09-30 14:22:37.212 INFO  [Test worker] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-09-30 14:22:37.273 INFO  [Test worker] org.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:sessionauth]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: SESSIONAUTH/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-30 14:22:38.229 INFO  [Test worker] org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-30 14:22:38.314 INFO  [Test worker] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-30 14:22:38.409 INFO  [Test worker] org.springframework.data.jpa.repository.query.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-30 14:22:38.742 WARN  [Test worker] org.springframework.boot.jpa.autoconfigure.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-30 14:22:39.268 INFO  [Test worker] com.example.sessionauth.controller.AuthControllerTest - Started AuthControllerTest in 4.515 seconds (process running for 6.121)
+2026-09-30 14:22:40.474 INFO  [Test worker] com.example.sessionauth.controller.AuthController - Signup succeeded for username=newuser
+2026-09-30 14:22:40.573 INFO  [Test worker] com.example.sessionauth.controller.AuthController - Session renewed for username=activeuser
+2026-09-30 14:22:40.584 WARN  [Test worker] com.example.sessionauth.controller.AuthController - Signup validation failed for username=null
+2026-09-30 14:22:40.588 WARN  [Test worker] com.example.sessionauth.controller.AuthController - Session renewal failed because the session is expired
+2026-09-30 14:22:40.600 INFO  [Test worker] org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.sessionauth.service.ProcessExecutionServiceTest]: ProcessExecutionServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-30 14:22:40.611 INFO  [Test worker] org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.sessionauth.SessionAuthApplication for test class com.example.sessionauth.service.ProcessExecutionServiceTest
+2026-09-30 14:22:40.614 INFO  [Test worker] org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.sessionauth.service.ProcessExecutionServiceTest]: ProcessExecutionServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-30 14:22:40.615 INFO  [Test worker] org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.sessionauth.SessionAuthApplication for test class com.example.sessionauth.service.ProcessExecutionServiceTest
+2026-09-30 14:22:40.708 INFO  [pool-2-thread-1] com.example.sessionauth.service.ProcessExecutionService - Demo process 58d9e0ff-c56f-4fa1-bdff-801cf0816f68 finished with status=SUCCEEDED exitCode=0
+2026-09-30 14:22:40.729 INFO  [Test worker] org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.sessionauth.service.UserServiceTest]: UserServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-30 14:22:40.730 INFO  [Test worker] org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.sessionauth.SessionAuthApplication for test class com.example.sessionauth.service.UserServiceTest
+2026-09-30 14:22:40.731 INFO  [Test worker] org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.sessionauth.service.UserServiceTest]: UserServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-30 14:22:40.731 INFO  [Test worker] org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.sessionauth.SessionAuthApplication for test class com.example.sessionauth.service.UserServiceTest
+2026-09-30 14:22:40.930 INFO  [SpringApplicationShutdownHook] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-30 14:22:40.932 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-09-30 14:22:40.933 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-09-30 14:25:34.747 INFO  [restartedMain] com.example.sessionauth.SessionAuthApplication - Starting SessionAuthApplication using Java 21.0.11 with PID 37860 (C:\Users\m2som\.gemini\antigravity\scratch\session-auth\build\classes\java\main started by m2som in C:\Users\m2som\.gemini\antigravity\scratch\session-auth)
+2026-09-30 14:25:34.756 INFO  [restartedMain] com.example.sessionauth.SessionAuthApplication - No active profile set, falling back to 1 default profile: "default"
+2026-09-30 14:25:34.797 INFO  [restartedMain] org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-09-30 14:25:34.798 INFO  [restartedMain] org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-09-30 14:25:34.882 INFO  [background-preinit] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-09-30 14:25:35.394 INFO  [restartedMain] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-30 14:25:35.445 INFO  [restartedMain] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 42 ms. Found 1 JPA repository interface.
+2026-09-30 14:25:35.951 INFO  [restartedMain] org.springframework.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-09-30 14:25:35.965 INFO  [restartedMain] org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-09-30 14:25:35.967 INFO  [restartedMain] org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2026-09-30 14:25:35.968 INFO  [restartedMain] org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-09-30 14:25:36.014 INFO  [restartedMain] org.springframework.boot.web.context.servlet.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1215 ms
+2026-09-30 14:25:36.161 INFO  [restartedMain] org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-30 14:25:36.226 INFO  [restartedMain] org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-09-30 14:25:36.685 INFO  [restartedMain] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-30 14:25:36.724 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-09-30 14:25:36.892 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:sessionauth user=SA
+2026-09-30 14:25:36.893 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-09-30 14:25:36.953 INFO  [restartedMain] org.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:sessionauth]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: SESSIONAUTH/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-30 14:25:37.814 INFO  [restartedMain] org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-30 14:25:37.882 INFO  [restartedMain] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-30 14:25:37.963 INFO  [restartedMain] org.springframework.data.jpa.repository.query.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-30 14:25:38.151 WARN  [restartedMain] org.springframework.boot.jpa.autoconfigure.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-30 14:25:38.449 INFO  [restartedMain] org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-09-30 14:25:38.457 WARN  [restartedMain] org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-09-30 14:25:38.459 INFO  [restartedMain] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-30 14:25:38.463 WARN  [restartedMain] org.springframework.beans.factory.support.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'inMemoryDatabaseShutdownExecutor': org.h2.jdbc.JdbcSQLNonTransientConnectionException: Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-240]
+2026-09-30 14:25:38.463 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-09-30 14:25:38.464 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-09-30 14:25:38.476 INFO  [restartedMain] org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-09-30 14:25:38.491 ERROR [restartedMain] org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2026-09-30 14:35:26.385 INFO  [Test worker] com.example.sessionauth.controller.AuthControllerTest - Starting AuthControllerTest using Java 21.0.11 with PID 31808 (started by m2som in C:\Users\m2som\.gemini\antigravity\scratch\session-auth)
+2026-09-30 14:35:26.395 INFO  [Test worker] com.example.sessionauth.controller.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-09-30 14:35:26.644 INFO  [background-preinit] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-09-30 14:35:27.280 INFO  [Test worker] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-30 14:35:27.344 INFO  [Test worker] org.springframework.data.repository.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 53 ms. Found 1 JPA repository interface.
+2026-09-30 14:35:27.768 INFO  [Test worker] org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-30 14:35:27.842 INFO  [Test worker] org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-09-30 14:35:28.373 INFO  [Test worker] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-30 14:35:28.412 INFO  [Test worker] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-09-30 14:35:28.581 INFO  [Test worker] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:sessionauth user=SA
+2026-09-30 14:35:28.583 INFO  [Test worker] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-09-30 14:35:28.647 INFO  [Test worker] org.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:sessionauth]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: SESSIONAUTH/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-30 14:35:29.533 INFO  [Test worker] org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-30 14:35:29.609 INFO  [Test worker] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-30 14:35:29.706 INFO  [Test worker] org.springframework.data.jpa.repository.query.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-30 14:35:30.053 WARN  [Test worker] org.springframework.boot.jpa.autoconfigure.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-30 14:35:30.586 INFO  [Test worker] com.example.sessionauth.controller.AuthControllerTest - Started AuthControllerTest in 4.624 seconds (process running for 6.485)
+2026-09-30 14:35:31.824 INFO  [Test worker] com.example.sessionauth.controller.AuthController - Signup succeeded for username=newuser
+2026-09-30 14:35:31.905 INFO  [Test worker] com.example.sessionauth.controller.AuthController - Session renewed for username=activeuser
+2026-09-30 14:35:31.916 WARN  [Test worker] com.example.sessionauth.controller.AuthController - Signup validation failed for username=null
+2026-09-30 14:35:31.920 WARN  [Test worker] com.example.sessionauth.controller.AuthController - Session renewal failed because the session is expired
+2026-09-30 14:35:31.928 INFO  [Test worker] org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.sessionauth.service.ProcessExecutionServiceTest]: ProcessExecutionServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-30 14:35:31.939 INFO  [Test worker] org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.sessionauth.SessionAuthApplication for test class com.example.sessionauth.service.ProcessExecutionServiceTest
+2026-09-30 14:35:31.941 INFO  [Test worker] org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.sessionauth.service.ProcessExecutionServiceTest]: ProcessExecutionServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-30 14:35:31.942 INFO  [Test worker] org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.sessionauth.SessionAuthApplication for test class com.example.sessionauth.service.ProcessExecutionServiceTest
+2026-09-30 14:35:34.050 INFO  [pool-2-thread-1] com.example.sessionauth.service.ProcessExecutionService - Demo process 83618aeb-b353-403d-9d0a-93f16f5775a9 finished with status=SUCCEEDED exitCode=0
+2026-09-30 14:35:34.128 INFO  [Test worker] org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.sessionauth.service.UserServiceTest]: UserServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-30 14:35:34.130 INFO  [Test worker] org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.sessionauth.SessionAuthApplication for test class com.example.sessionauth.service.UserServiceTest
+2026-09-30 14:35:34.131 INFO  [Test worker] org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.example.sessionauth.service.UserServiceTest]: UserServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-30 14:35:34.132 INFO  [Test worker] org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.example.sessionauth.SessionAuthApplication for test class com.example.sessionauth.service.UserServiceTest
+2026-09-30 14:35:34.329 INFO  [SpringApplicationShutdownHook] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-30 14:35:34.330 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-09-30 14:35:34.333 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
