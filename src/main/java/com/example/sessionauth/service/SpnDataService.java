@@ -1,5 +1,7 @@
 package com.example.sessionauth.service;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -9,6 +11,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.WorkbookUtil;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +31,7 @@ public class SpnDataService {
 
     public static final int PAGE_SIZE = 10;
 
+    private static final int EXCEL_CELL_CHARACTER_LIMIT = 32767;
     private static final String INSERT_RECORD_SQL = """
             INSERT INTO spn_records (upload_id, category_key, row_number, record_json, search_text)
             VALUES (?, ?, ?, ?, ?)
@@ -160,6 +167,53 @@ public class SpnDataService {
         jdbcTemplate.update("DELETE FROM spn_uploads WHERE id = ? AND owner = ?", uploadId, owner);
     }
 
+        @Transactional
+        public Map<String, Object> createRecord(String owner, String uploadId, String categoryKey, Map<String, Object> values) {
+        requireOwnedCompleteUpload(owner, uploadId);
+        List<String> columns = categoryColumns(uploadId, categoryKey);
+        validateRecordValues(columns, values);
+        Integer nextRowNumber = jdbcTemplate.queryForObject(
+            "SELECT COALESCE(MAX(row_number), -1) + 1 FROM spn_records WHERE upload_id = ? AND category_key = ?",
+            Integer.class, uploadId, categoryKey);
+        String json = writeJson(values);
+        jdbcTemplate.update(INSERT_RECORD_SQL, uploadId, categoryKey, nextRowNumber, json, searchableText(json));
+        Long recordId = jdbcTemplate.queryForObject(
+            "SELECT id FROM spn_records WHERE upload_id = ? AND category_key = ? AND row_number = ?",
+            Long.class, uploadId, categoryKey, nextRowNumber);
+        jdbcTemplate.update("UPDATE spn_categories SET record_count = record_count + 1 WHERE upload_id = ? AND category_key = ?",
+            uploadId, categoryKey);
+        jdbcTemplate.update("UPDATE spn_uploads SET record_count = record_count + 1 WHERE id = ? AND owner = ?",
+            uploadId, owner);
+        return recordView(recordId, values);
+        }
+
+        @Transactional
+        public Map<String, Object> updateRecord(String owner, String uploadId, long recordId, Map<String, Object> values) {
+        requireOwnedCompleteUpload(owner, uploadId);
+        List<String> categoryKeys = jdbcTemplate.query("SELECT category_key FROM spn_records WHERE id = ? AND upload_id = ?",
+            (result, rowNumber) -> result.getString("category_key"), recordId, uploadId);
+        if (categoryKeys.isEmpty()) throw new IllegalArgumentException("Record not found.");
+        validateRecordValues(categoryColumns(uploadId, categoryKeys.get(0)), values);
+        String json = writeJson(values);
+        jdbcTemplate.update("UPDATE spn_records SET record_json = ?, search_text = ? WHERE id = ? AND upload_id = ?",
+            json, searchableText(json), recordId, uploadId);
+        return recordView(recordId, values);
+        }
+
+        @Transactional
+        public void deleteRecord(String owner, String uploadId, long recordId) {
+        requireOwnedCompleteUpload(owner, uploadId);
+        List<String> categoryKeys = jdbcTemplate.query("SELECT category_key FROM spn_records WHERE id = ? AND upload_id = ?",
+            (result, rowNumber) -> result.getString("category_key"), recordId, uploadId);
+        if (categoryKeys.isEmpty()) throw new IllegalArgumentException("Record not found.");
+        String categoryKey = categoryKeys.get(0);
+        jdbcTemplate.update("DELETE FROM spn_records WHERE id = ? AND upload_id = ?", recordId, uploadId);
+        jdbcTemplate.update("UPDATE spn_categories SET record_count = record_count - 1 WHERE upload_id = ? AND category_key = ?",
+            uploadId, categoryKey);
+        jdbcTemplate.update("UPDATE spn_uploads SET record_count = record_count - 1 WHERE id = ? AND owner = ?",
+            uploadId, owner);
+        }
+
     public Map<String, Object> latestUpload(String owner) {
         List<Map<String, Object>> uploads = jdbcTemplate.query("""
                 SELECT id, file_name, file_size, file_format, created_value, data_date, organization, record_count
@@ -211,8 +265,9 @@ public class SpnDataService {
         parameters.add(PAGE_SIZE);
         parameters.add((long) page * PAGE_SIZE);
         List<Map<String, Object>> records = jdbcTemplate.query("""
-                SELECT record_json FROM spn_records WHERE upload_id = ? AND category_key = ?
-                """ + predicate + " ORDER BY row_number LIMIT ? OFFSET ?", (result, rowNumber) -> readRecord(result.getString("record_json")),
+            SELECT id, record_json FROM spn_records WHERE upload_id = ? AND category_key = ?
+            """ + predicate + " ORDER BY row_number LIMIT ? OFFSET ?", (result, rowNumber) ->
+            recordView(result.getLong("id"), readRecord(result.getString("record_json"))),
                 parameters.toArray());
         int totalRecords = total == null ? 0 : total;
         Map<String, Object> response = new LinkedHashMap<>();
@@ -222,6 +277,125 @@ public class SpnDataService {
         response.put("totalRecords", totalRecords);
         response.put("totalPages", Math.max(1, (int) Math.ceil((double) totalRecords / PAGE_SIZE)));
         return response;
+    }
+
+    private List<String> categoryColumns(String uploadId, String categoryKey) {
+        List<String> columnsJson = jdbcTemplate.query("SELECT columns_json FROM spn_categories WHERE upload_id = ? AND category_key = ?",
+                (result, rowNumber) -> result.getString("columns_json"), uploadId, categoryKey);
+        if (columnsJson.isEmpty()) throw new IllegalArgumentException("Category not found.");
+        return readColumns(columnsJson.get(0));
+    }
+
+    private void validateRecordValues(List<String> columns, Map<String, Object> values) {
+        if (values == null || !columns.containsAll(values.keySet())) {
+            throw new IllegalArgumentException("Record values must use fields defined for this category.");
+        }
+    }
+
+    private Map<String, Object> recordView(long recordId, Map<String, Object> values) {
+        Map<String, Object> item = new LinkedHashMap<>();
+        item.put("id", recordId);
+        item.put("values", values);
+        return item;
+    }
+
+    public void validateExcelExport(String owner, String uploadId) {
+        requireOwnedCompleteUpload(owner, uploadId);
+    }
+
+    public void writeExcelExport(String owner, String uploadId, OutputStream output) throws IOException {
+        requireOwnedCompleteUpload(owner, uploadId);
+        SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+        try (workbook) {
+            workbook.setCompressTempFiles(true);
+            List<ExportCategory> categories = jdbcTemplate.query("""
+                    SELECT category_key, label, columns_json
+                    FROM spn_categories WHERE upload_id = ? ORDER BY label
+                    """, (result, rowNumber) -> new ExportCategory(
+                    result.getString("category_key"), result.getString("label"), readColumns(result.getString("columns_json"))), uploadId);
+
+            for (ExportCategory category : categories) {
+                List<String> columns = category.columns();
+                List<Integer> chunkCounts = exportColumnChunkCounts(uploadId, category);
+                Sheet sheet = workbook.createSheet(uniqueSheetName(workbook, category.label()));
+                Row header = sheet.createRow(0);
+                int excelColumnIndex = 0;
+                for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
+                    for (int chunkIndex = 0; chunkIndex < chunkCounts.get(columnIndex); chunkIndex++) {
+                        String headerValue = chunkIndex == 0 ? columns.get(columnIndex)
+                                : columns.get(columnIndex) + " (continued " + (chunkIndex + 1) + ")";
+                        header.createCell(excelColumnIndex++).setCellValue(headerValue);
+                    }
+                }
+                jdbcTemplate.query("""
+                        SELECT record_json FROM spn_records
+                        WHERE upload_id = ? AND category_key = ? ORDER BY row_number
+                        """, result -> {
+                    int rowIndex = 1;
+                    while (result.next()) {
+                        Map<String, Object> record = readRecord(result.getString("record_json"));
+                        Row row = sheet.createRow(rowIndex++);
+                        int rowExcelColumnIndex = 0;
+                        for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
+                            Object value = record.get(columns.get(columnIndex));
+                            if (value != null) {
+                                String cellValue = exportCellValue(value);
+                                for (int chunkIndex = 0; chunkIndex < chunkCounts.get(columnIndex); chunkIndex++) {
+                                    int start = chunkIndex * EXCEL_CELL_CHARACTER_LIMIT;
+                                    if (start < cellValue.length()) {
+                                        int end = Math.min(start + EXCEL_CELL_CHARACTER_LIMIT, cellValue.length());
+                                        row.createCell(rowExcelColumnIndex + chunkIndex).setCellValue(cellValue.substring(start, end));
+                                    }
+                                }
+                            }
+                            rowExcelColumnIndex += chunkCounts.get(columnIndex);
+                        }
+                    }
+                    return null;
+                }, uploadId, category.key());
+            }
+            workbook.write(output);
+        }
+    }
+
+    private List<Integer> exportColumnChunkCounts(String uploadId, ExportCategory category) {
+        List<Integer> chunkCounts = new ArrayList<>();
+        category.columns().forEach(column -> chunkCounts.add(1));
+        jdbcTemplate.query("""
+                SELECT record_json FROM spn_records
+                WHERE upload_id = ? AND category_key = ? ORDER BY row_number
+                """, result -> {
+            while (result.next()) {
+                Map<String, Object> record = readRecord(result.getString("record_json"));
+                for (int columnIndex = 0; columnIndex < category.columns().size(); columnIndex++) {
+                    Object value = record.get(category.columns().get(columnIndex));
+                    if (value != null) {
+                        int requiredChunks = Math.max(1, (exportCellValue(value).length() + EXCEL_CELL_CHARACTER_LIMIT - 1)
+                                / EXCEL_CELL_CHARACTER_LIMIT);
+                        chunkCounts.set(columnIndex, Math.max(chunkCounts.get(columnIndex), requiredChunks));
+                    }
+                }
+            }
+            return null;
+        }, uploadId, category.key());
+        return chunkCounts;
+    }
+
+    private String uniqueSheetName(SXSSFWorkbook workbook, String label) {
+        String base = WorkbookUtil.createSafeSheetName(label).replaceAll("\\s+", " ").trim();
+        if (base.isBlank()) base = "Data";
+        String candidate = base;
+        int suffix = 2;
+        while (workbook.getSheet(candidate) != null) {
+            String ending = " (" + suffix++ + ")";
+            candidate = base.substring(0, Math.min(base.length(), 31 - ending.length())) + ending;
+        }
+        return candidate;
+    }
+
+    private String exportCellValue(Object value) {
+        if (value instanceof Map<?, ?> || value instanceof List<?>) return writeJson(value);
+        return String.valueOf(value);
     }
 
     private void requireOwnedIncompleteUpload(String owner, String uploadId) {
@@ -267,5 +441,8 @@ public class SpnDataService {
     }
 
     private record StoredRecord(int rowNumber, Map<String, Object> payload) {
+    }
+
+    private record ExportCategory(String key, String label, List<String> columns) {
     }
 }

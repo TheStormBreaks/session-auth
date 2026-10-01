@@ -2,12 +2,14 @@ package com.example.sessionauth.controller;
 
 import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +19,7 @@ import com.example.sessionauth.model.SpnRecordBatchRequest;
 import com.example.sessionauth.model.SpnUploadRequest;
 import com.example.sessionauth.service.SpnDataService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
@@ -102,6 +105,61 @@ public class SpnController {
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
         }
+    }
+
+    @PostMapping("/{uploadId}/records/new")
+    public ResponseEntity<?> createRecord(HttpSession session, @PathVariable String uploadId,
+                                          @RequestParam String categoryKey, @RequestBody Map<String, Object> values) {
+        String owner = currentUser(session);
+        if (owner == null) return unauthorized();
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(spnDataService.createRecord(owner, uploadId, categoryKey, values));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+        }
+    }
+
+    @PutMapping("/{uploadId}/records/{recordId}")
+    public ResponseEntity<?> updateRecord(HttpSession session, @PathVariable String uploadId,
+                                          @PathVariable long recordId, @RequestBody Map<String, Object> values) {
+        String owner = currentUser(session);
+        if (owner == null) return unauthorized();
+        try {
+            return ResponseEntity.ok(spnDataService.updateRecord(owner, uploadId, recordId, values));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{uploadId}/records/{recordId}")
+    public ResponseEntity<?> deleteRecord(HttpSession session, @PathVariable String uploadId, @PathVariable long recordId) {
+        String owner = currentUser(session);
+        if (owner == null) return unauthorized();
+        try {
+            spnDataService.deleteRecord(owner, uploadId, recordId);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+        }
+    }
+
+    @GetMapping("/{uploadId}/excel")
+    public void exportExcel(HttpSession session, @PathVariable String uploadId, HttpServletResponse response) throws java.io.IOException {
+        String owner = currentUser(session);
+        if (owner == null) {
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), "Session expired");
+            return;
+        }
+        try {
+            spnDataService.validateExcelExport(owner, uploadId);
+        } catch (IllegalArgumentException ex) {
+            response.sendError(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+            return;
+        }
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"parsed-spn-data.xlsx\"");
+        spnDataService.writeExcelExport(owner, uploadId, response.getOutputStream());
     }
 
     private String currentUser(HttpSession session) {

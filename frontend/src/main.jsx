@@ -94,11 +94,17 @@ function compactValue(value) {
   return values.slice(0, 4).join(' · ') || '—';
 }
 
-function RecordBrowser({ uploadId, categories, selectedKey, onSelect }) {
+function RecordBrowser({ uploadId, categories, selectedKey, onSelect, onRecordCountChange }) {
   const [categoryQuery, setCategoryQuery] = useState('');
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(0);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [recordEditor, setRecordEditor] = useState(null);
+  const [recordDraft, setRecordDraft] = useState('');
+  const [recordActionError, setRecordActionError] = useState('');
+  const [isSavingRecord, setIsSavingRecord] = useState(false);
+  const [deletingRecordId, setDeletingRecordId] = useState(null);
+  const [recordsRevision, setRecordsRevision] = useState(0);
   const [records, setRecords] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [loadingRecords, setLoadingRecords] = useState(false);
@@ -133,7 +139,75 @@ function RecordBrowser({ uploadId, categories, selectedKey, onSelect }) {
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [uploadId, category, page, query]);
+  }, [uploadId, category, page, query, recordsRevision]);
+
+  function startCreateRecord() {
+    const values = Object.fromEntries(category.columns.map((column) => [column, '']));
+    setSelectedRecord(null);
+    setRecordActionError('');
+    setRecordEditor({ id: null });
+    setRecordDraft(JSON.stringify(values, null, 2));
+  }
+
+  function startEditRecord(item) {
+    setSelectedRecord(null);
+    setRecordActionError('');
+    setRecordEditor({ id: item.id });
+    setRecordDraft(JSON.stringify(item.values, null, 2));
+  }
+
+  async function saveRecord(event) {
+    event.preventDefault();
+    let values;
+    try {
+      values = JSON.parse(recordDraft);
+      if (!values || typeof values !== 'object' || Array.isArray(values)) {
+        throw new Error('Record data must be a JSON object.');
+      }
+    } catch (error) {
+      setRecordActionError(error instanceof SyntaxError ? 'Enter valid JSON record data.' : error.message);
+      return;
+    }
+
+    setIsSavingRecord(true);
+    setRecordActionError('');
+    const isNewRecord = recordEditor.id === null;
+    try {
+      const categoryParams = new URLSearchParams({ categoryKey: category.key });
+      const path = isNewRecord
+        ? `/api/spn/uploads/${encodeURIComponent(uploadId)}/records/new?${categoryParams}`
+        : `/api/spn/uploads/${encodeURIComponent(uploadId)}/records/${encodeURIComponent(recordEditor.id)}`;
+      await request(path, { method: isNewRecord ? 'POST' : 'PUT', body: JSON.stringify(values) });
+      if (isNewRecord) {
+        onRecordCountChange(category.key, 1);
+        setQuery('');
+        setPage(Math.floor(category.recordCount / RECORDS_PER_PAGE));
+      }
+      setRecordEditor(null);
+      setRecordsRevision((revision) => revision + 1);
+    } catch (error) {
+      setRecordActionError(error.message);
+    } finally {
+      setIsSavingRecord(false);
+    }
+  }
+
+  async function deleteRecord(item) {
+    if (!window.confirm('Delete this record? This cannot be undone.')) return;
+    setDeletingRecordId(item.id);
+    setRecordActionError('');
+    try {
+      await request(`/api/spn/uploads/${encodeURIComponent(uploadId)}/records/${encodeURIComponent(item.id)}`, { method: 'DELETE' });
+      onRecordCountChange(category.key, -1);
+      if (selectedRecord?.id === item.id) setSelectedRecord(null);
+      setPage((currentPage) => records.length === 1 && currentPage > 0 ? currentPage - 1 : currentPage);
+      setRecordsRevision((revision) => revision + 1);
+    } catch (error) {
+      setRecordActionError(error.message);
+    } finally {
+      setDeletingRecordId(null);
+    }
+  }
 
   return (
     <div className="record-browser">
@@ -145,7 +219,7 @@ function RecordBrowser({ uploadId, categories, selectedKey, onSelect }) {
             type="button"
             key={item.key}
             className={item.key === category.key ? 'category-option selected' : 'category-option'}
-            onClick={() => { onSelect(item.key); setQuery(''); setPage(0); setSelectedRecord(null); }}
+            onClick={() => { onSelect(item.key); setQuery(''); setPage(0); setSelectedRecord(null); setRecordEditor(null); setRecordActionError(''); }}
           ><span>{item.label}</span><small>{item.recordCount.toLocaleString()}</small></button>)}
           {matchingCategories.length === 0 && <p className="empty-results">No categories match.</p>}
         </div>
@@ -156,19 +230,33 @@ function RecordBrowser({ uploadId, categories, selectedKey, onSelect }) {
             <span>{totalRecords.toLocaleString()} records</span>
         </header>
         <div className="records-controls">
-          <input type="search" value={query} placeholder={`Search ${category.recordCount.toLocaleString()} records`} onChange={(event) => { setQuery(event.target.value); setPage(0); setSelectedRecord(null); }} />
+          <input type="search" value={query} placeholder={`Search ${category.recordCount.toLocaleString()} records`} onChange={(event) => { setQuery(event.target.value); setPage(0); setSelectedRecord(null); setRecordEditor(null); }} />
           <span>{category.columns.length} fields</span>
+          <button className="record-primary-action" type="button" onClick={startCreateRecord} disabled={loadingRecords}>New record</button>
         </div>
         {recordError && <p className="file-error" role="alert">{recordError}</p>}
+        {recordActionError && <p className="file-error" role="alert">{recordActionError}</p>}
+        {recordEditor && <form className="record-editor" onSubmit={saveRecord}>
+          <header><strong>{recordEditor.id === null ? 'New record' : 'Edit record'}</strong><span>JSON</span></header>
+          <textarea aria-label="Record values as JSON" value={recordDraft} onChange={(event) => setRecordDraft(event.target.value)} spellCheck="false" />
+          <div className="record-editor-actions">
+            <button className="record-primary-action" type="submit" disabled={isSavingRecord}>{isSavingRecord ? 'Saving…' : 'Save changes'}</button>
+            <button type="button" onClick={() => setRecordEditor(null)} disabled={isSavingRecord}>Cancel</button>
+          </div>
+        </form>}
         {loadingRecords ? <p className="records-loading">Loading records…</p> : records.length > 0 ? <div className="records-table-scroll"><table className="records-table">
-          <thead><tr><th>#</th>{category.columns.map((column) => <th key={column}>{column}</th>)}<th>Details</th></tr></thead>
-          <tbody>{records.map((record, index) => <tr key={`${page}-${index}`}>
+          <thead><tr><th>#</th>{category.columns.map((column) => <th key={column}>{column}</th>)}<th>Actions</th></tr></thead>
+          <tbody>{records.map((item, index) => <tr key={item.id}>
             <td>{(page * RECORDS_PER_PAGE + index + 1).toLocaleString()}</td>
             {category.columns.map((column) => {
-              const value = compactValue(record[column]);
+              const value = compactValue(item.values[column]);
               return <td key={column} title={value}>{value}</td>;
             })}
-            <td><button className="inspect-record" type="button" onClick={() => setSelectedRecord({ record, number: page * RECORDS_PER_PAGE + index + 1 })}>Inspect</button></td>
+            <td className="record-row-actions">
+              <button type="button" onClick={() => setSelectedRecord({ id: item.id, record: item.values, number: page * RECORDS_PER_PAGE + index + 1 })}>Inspect</button>
+              <button type="button" onClick={() => startEditRecord(item)}>Edit</button>
+              <button type="button" onClick={() => deleteRecord(item)} disabled={deletingRecordId === item.id}>{deletingRecordId === item.id ? 'Deleting…' : 'Delete'}</button>
+            </td>
           </tr>)}</tbody>
         </table></div> : <p className="empty-results">No records match that search.</p>}
         {selectedRecord && <section className="record-detail">
@@ -220,6 +308,22 @@ function App() {
   const [fileError, setFileError] = useState('');
   const [isParsingFile, setIsParsingFile] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(null);
+  const [isDownloadingExcel, setIsDownloadingExcel] = useState(false);
+  const [exportError, setExportError] = useState('');
+
+  function clearSpnData() {
+    setFileName('');
+    setFileSize(0);
+    setFileCategories([]);
+    setFileMetadata(null);
+    setUploadId('');
+    setSelectedCategoryKey('');
+    setFileError('');
+    setIsParsingFile(false);
+    setUploadProgress(null);
+    setIsDownloadingExcel(false);
+    setExportError('');
+  }
 
   function navigate(next) {
     const path = next === 'signup' ? '/signup' : next === 'dashboard' ? '/dashboard' : '/';
@@ -237,20 +341,6 @@ function App() {
   useEffect(() => {
     if (page !== 'dashboard') return undefined;
     request('/me').then((session) => setUsername(session.username)).catch(() => navigate('login'));
-    request('/api/spn/uploads/latest').then((upload) => {
-      setUploadId(upload.id);
-      setFileName(upload.fileName);
-      setFileSize(upload.fileSize);
-      setFileMetadata({
-        format: upload.format,
-        created: upload.created,
-        dataDate: upload.dataDate,
-        organization: upload.organization,
-        recordCount: upload.recordCount,
-      });
-      setFileCategories(upload.categories);
-      setSelectedCategoryKey([...upload.categories].sort((left, right) => right.recordCount - left.recordCount)[0]?.key || '');
-    }).catch(() => {});
     return undefined;
   }, [page]);
 
@@ -281,6 +371,7 @@ function App() {
         navigate('login');
       } else {
         const session = await request('/login', { method: 'POST', body: JSON.stringify(payload) });
+        clearSpnData();
         setUsername(session.username);
         setTimeLeft(900);
         navigate('dashboard');
@@ -306,8 +397,16 @@ function App() {
 
   async function logout() {
     await request('/logout', { method: 'POST' }).catch(() => null);
+    clearSpnData();
     setNotice('You have been signed out.');
     navigate('login');
+  }
+
+  function adjustCategoryRecordCount(categoryKey, change) {
+    setFileCategories((current) => current.map((category) => category.key === categoryKey
+      ? { ...category, recordCount: category.recordCount + change }
+      : category));
+    setFileMetadata((current) => current ? { ...current, recordCount: current.recordCount + change } : current);
   }
 
   async function uploadSpanFile(event) {
@@ -315,6 +414,7 @@ function App() {
     if (!file) return;
     let createdUploadId = '';
     setFileError('');
+    setExportError('');
     setUploadProgress(null);
     setIsParsingFile(true);
     try {
@@ -386,6 +486,33 @@ function App() {
     }
   }
 
+  async function downloadExcel() {
+    if (!uploadId) return;
+    setIsDownloadingExcel(true);
+    setExportError('');
+    try {
+      const response = await fetch(`/api/spn/uploads/${encodeURIComponent(uploadId)}/excel`, { credentials: 'include' });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.error || 'Could not export the parsed data.');
+      }
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const baseName = fileName.replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|]/g, '_') || 'spn-data';
+      link.href = objectUrl;
+      link.download = `${baseName}.xlsx`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    } catch (downloadError) {
+      setExportError(downloadError.message || 'Could not export the parsed data.');
+    } finally {
+      setIsDownloadingExcel(false);
+    }
+  }
+
   const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
   const seconds = String(timeLeft % 60).padStart(2, '0');
 
@@ -399,11 +526,17 @@ function App() {
           <section className="file-explorer">
             <div className="file-explorer-head">
               <div><h2>SPN file</h2><p>Upload a SPN file to browse its categories and records.</p></div>
-              <label className="file-picker">{isParsingFile ? uploadProgress ? `Saving ${uploadProgress.saved.toLocaleString()} / ${uploadProgress.total.toLocaleString()}` : 'Reading file…' : fileName ? 'Choose another file' : 'Choose file'}
-                <input type="file" accept=".spn,.xml,application/xml,text/xml" onChange={uploadSpanFile} disabled={isParsingFile} />
-              </label>
+              <div className="file-actions">
+                {uploadId && <button className="quiet-button download-button" type="button" onClick={downloadExcel} disabled={isDownloadingExcel || isParsingFile}>
+                  {isDownloadingExcel ? 'Preparing Excel…' : 'Download Excel'}
+                </button>}
+                <label className="file-picker">{isParsingFile ? uploadProgress ? `Saving ${uploadProgress.saved.toLocaleString()} / ${uploadProgress.total.toLocaleString()}` : 'Reading file…' : fileName ? 'Choose another file' : 'Choose file'}
+                  <input type="file" accept=".spn,.xml,application/xml,text/xml" onChange={uploadSpanFile} disabled={isParsingFile} />
+                </label>
+              </div>
             </div>
             {fileError && <p className="file-error" role="alert">{fileError}</p>}
+            {exportError && <p className="file-error" role="alert">{exportError}</p>}
             {fileCategories.length > 0 && <>
               <div className="file-summary"><strong>{fileName}</strong><span>{(fileSize / (1024 * 1024)).toFixed(1)} MB</span></div>
               <div className="file-facts">
@@ -414,7 +547,7 @@ function App() {
                 <div><span>Categories</span><strong>{fileCategories.length}</strong></div>
                 <div><span>Records</span><strong>{fileMetadata.recordCount.toLocaleString()}</strong></div>
               </div>
-              <RecordBrowser uploadId={uploadId} categories={fileCategories} selectedKey={selectedCategoryKey} onSelect={setSelectedCategoryKey} />
+              <RecordBrowser uploadId={uploadId} categories={fileCategories} selectedKey={selectedCategoryKey} onSelect={setSelectedCategoryKey} onRecordCountChange={adjustCategoryRecordCount} />
             </>}
           </section>
           <label className="notes-label" htmlFor="notes">Notes <span>Saved in this browser</span></label>

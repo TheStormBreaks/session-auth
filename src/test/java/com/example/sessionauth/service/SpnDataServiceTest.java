@@ -1,8 +1,12 @@
 package com.example.sessionauth.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.AfterEach;
@@ -29,7 +33,7 @@ class SpnDataServiceTest {
     }
 
     @Test
-    void storesRecordsAndReturnsTenRowsPerPage() {
+    void storesRecordsAndReturnsTenRowsPerPage() throws Exception {
         owner = "spn-test-user";
         List<SpnUploadRequest.Category> categories = List.of(
                 new SpnUploadRequest.Category("definitions/itemDef", "definitions / itemDef", 25, List.of("id", "value")));
@@ -58,5 +62,31 @@ class SpnDataServiceTest {
         assertThat(latestUpload).containsEntry("fileName", "sample.spn");
         assertThatThrownBy(() -> spnDataService.pageRecords("another-user", uploadId, "definitions/itemDef", 0, null))
                 .isInstanceOf(IllegalArgumentException.class);
+
+        Map<?, ?> firstRecord = (Map<?, ?>) ((List<?>) firstPage.get("items")).get(0);
+        long firstRecordId = ((Number) firstRecord.get("id")).longValue();
+        Map<String, Object> updated = spnDataService.updateRecord(owner, uploadId, firstRecordId,
+            Map.of("id", 0, "value", "EDITED"));
+        assertThat(((Map<?, ?>) updated.get("values")).get("value")).isEqualTo("EDITED");
+        assertThat(spnDataService.pageRecords(owner, uploadId, "definitions/itemDef", 0, "edited"))
+            .containsEntry("totalRecords", 1);
+
+        Map<String, Object> created = spnDataService.createRecord(owner, uploadId, "definitions/itemDef",
+            Map.of("id", 25, "value", "CREATED"));
+        long createdId = ((Number) created.get("id")).longValue();
+        assertThat(spnDataService.pageRecords(owner, uploadId, "definitions/itemDef", 0, null))
+            .containsEntry("totalRecords", 26);
+        spnDataService.deleteRecord(owner, uploadId, createdId);
+        assertThat(spnDataService.pageRecords(owner, uploadId, "definitions/itemDef", 0, null))
+            .containsEntry("totalRecords", 25);
+
+        ByteArrayOutputStream export = new ByteArrayOutputStream();
+        spnDataService.writeExcelExport(owner, uploadId, export);
+        try (Workbook workbook = WorkbookFactory.create(new ByteArrayInputStream(export.toByteArray()))) {
+            assertThat(workbook.getNumberOfSheets()).isEqualTo(1);
+            assertThat(workbook.getSheetAt(0).getSheetName()).isEqualTo("definitions itemDef");
+            assertThat(workbook.getSheetAt(0).getRow(1).getCell(1).getStringCellValue()).isEqualTo("EDITED");
+            assertThat(workbook.getSheetAt(0).getRow(13).getCell(1).getStringCellValue()).isEqualTo("MATCH");
+        }
     }
 }

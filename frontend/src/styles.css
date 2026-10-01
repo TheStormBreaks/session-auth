@@ -169,6 +169,8 @@ button { cursor: pointer; }
 }
 .file-picker:hover { border-color: var(--accent); color: var(--accent); }
 .file-picker input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+.file-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; }
+.download-button:disabled { cursor: wait; opacity: .65; }
 .file-summary { display: flex; justify-content: space-between; gap: 12px; margin: 14px 0 8px; color: var(--muted); font-size: 12px; }
 .file-summary strong { overflow: hidden; color: var(--ink); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .file-facts { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); margin-bottom: 16px; border: 1px solid var(--line); background: var(--surface); }
@@ -196,13 +198,24 @@ button { cursor: pointer; }
 .records-header > span, .records-controls > span { flex: 0 0 auto; color: var(--muted); font-size: 11px; }
 .records-controls { display: flex; align-items: center; gap: 7px; padding: 9px 10px 0 0; }
 .records-controls input { min-width: 0; flex: 1; margin: 0 0 8px 9px; }
+.records-controls button, .record-row-actions button, .record-editor-actions button { min-height: 28px; padding: 0 8px; border: 1px solid var(--line); border-radius: 2px; background: #fff; color: var(--ink); font-size: 11px; white-space: nowrap; }
+.records-controls button:hover, .record-row-actions button:hover, .record-editor-actions button:hover { border-color: var(--accent); color: var(--accent); }
+.records-controls button.record-primary-action, .record-editor-actions button.record-primary-action { border-color: var(--accent); background: var(--accent); color: #fff; }
+.records-controls button.record-primary-action:hover, .record-editor-actions button.record-primary-action:hover { background: #2b523f; }
+.records-controls button:disabled, .record-row-actions button:disabled, .record-editor-actions button:disabled { cursor: wait; opacity: .6; }
 .records-table-scroll { overflow: auto; max-height: 350px; }
 .records-table { width: max-content; min-width: 100%; border-collapse: collapse; font-size: 11px; }
 .records-table th { position: sticky; top: 0; z-index: 1; background: #f0f3f1; color: #48534e; font-size: 10px; font-weight: 600; text-align: left; }
 .records-table th, .records-table td { max-width: 260px; padding: 7px 9px; border-bottom: 1px solid #e8ece9; vertical-align: top; }
 .records-table td { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .records-table tbody tr:hover { background: #f7f9f8; }
+.records-table td.record-row-actions { display: flex; max-width: none; gap: 4px; overflow: visible; }
 .inspect-record { padding: 2px 6px; border: 1px solid var(--line); border-radius: 2px; background: #fff; color: var(--accent); font-size: 10px; }
+.record-editor { margin: 0 10px 10px; border: 1px solid var(--line); background: #f8f9f8; }
+.record-editor header { display: flex; min-height: 34px; align-items: center; justify-content: space-between; padding: 0 9px; border-bottom: 1px solid var(--line); color: var(--ink); font-size: 11px; }
+.record-editor header span { color: var(--muted); font-size: 10px; text-transform: uppercase; }
+.record-editor textarea { display: block; width: calc(100% - 18px); min-height: 150px; margin: 9px; padding: 9px; border: 1px solid var(--line); border-radius: 2px; color: var(--ink); font: 12px/1.5 Consolas, monospace; resize: vertical; }
+.record-editor-actions { display: flex; justify-content: flex-end; gap: 6px; padding: 0 9px 9px; }
 .record-detail { margin: 8px 10px; border: 1px solid var(--line); }
 .record-detail header { display: flex; min-height: 34px; align-items: center; justify-content: space-between; padding: 0 9px; background: #f0f3f1; font-size: 11px; }
 .record-detail header button { border: 0; background: transparent; color: var(--accent); font-size: 11px; }
@@ -248,6 +261,8 @@ button { cursor: pointer; }
   .text-button { margin-left: auto; }
   .file-explorer-head { align-items: flex-start; flex-direction: column; }
   .file-picker { width: 100%; }
+  .file-actions { width: 100%; flex-direction: column-reverse; }
+  .download-button { width: 100%; }
   .file-summary { align-items: flex-start; flex-direction: column; gap: 4px; }
   .file-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .file-facts div:nth-child(odd) { border-left: 0; }

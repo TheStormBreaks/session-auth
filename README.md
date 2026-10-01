@@ -4,11 +4,28 @@ A session-based authentication example split into an independent Spring Boot API
 
 ## Architecture
 
-- `src/`: Spring Boot 4 backend, Spring Data JPA, H2, validation, BCrypt, and servlet sessions.
-- `frontend/`: React 19 and Vite application. It owns login, signup, and dashboard presentation.
-- The browser talks to `/api/auth/*`. Vite proxies `/api` to `http://localhost:8080` during development.
-- The dashboard parses `.spn`/XML files locally, saves categories and parsed records to H2 in batches, and loads searchable pages of 10 records at a time. Record inspection shows all nested fields.
+The application separates its user interface from its server-side API. The active UI is a React single-page application; Spring Boot provides REST endpoints and owns authentication and persisted data. The backend does not render the login, signup, or dashboard pages with Thymeleaf, and Angular is not used in this implementation.
+
+### Backend: Spring Boot
+
+- `src/main/java/`: Spring Boot 4 application running on Java 21. Controllers under `controller/` expose `/api/auth/*` and `/api/spn/uploads/*` endpoints; services contain authentication and SPN data operations; repositories and H2 provide persistence.
+- The API returns JSON for application data, with binary responses for the CAPTCHA image and Excel workbook export.
+- Authentication uses an HTTP session cookie. The frontend includes credentials on API requests so the browser sends that cookie.
+- SPN XML parsing starts in the browser. Parsed category metadata and records are sent to the backend in batches; the backend stores them and serves paginated/searchable records and workbook exports.
 - The runtime H2 database is file-backed at `data/sessionauth`, so imports remain available after restarting the backend. Test runs use an isolated in-memory database.
+
+### Frontend: React and Vite
+
+- `frontend/`: React 19 application built and served by Vite. It owns login, signup, dashboard, SPN upload, record browsing, and download interactions.
+- The frontend calls the backend through `/api/*`. During development, Vite serves the UI on port 5173 and proxies `/api` requests to Spring Boot on port 8080.
+- The frontend and backend have separate build/run commands, so the UI can be developed independently while using the Spring Boot API.
+
+### Request Flow
+
+1. The browser renders the React application served by Vite.
+2. React sends authenticated requests to the Spring Boot REST API using the session cookie.
+3. Spring Boot validates the session, applies application rules, reads or writes H2 data, and returns JSON or a file response.
+4. React renders the API response and handles user interactions; the backend does not return server-rendered page templates.
 
 ## Run locally
 
@@ -44,7 +61,11 @@ Run backend tests with `./gradlew.bat test`. Build the frontend with `npm run bu
 - `POST /api/spn/uploads/{id}/records`: stores a batch of parsed category records.
 - `POST /api/spn/uploads/{id}/complete`: verifies the row counts and makes the import available.
 - `GET /api/spn/uploads/latest`: returns the user's latest completed import.
-- `GET /api/spn/uploads/{id}/records?categoryKey=...&page=0`: returns 10 database records for the selected category/page; optional `query` searches stored record content.
+- `GET /api/spn/uploads/{id}/records?categoryKey=...&page=0`: returns 10 database records for the selected category/page as `{ id, values }` items; optional `query` searches stored record content.
+- `POST /api/spn/uploads/{id}/records/new?categoryKey=...`: adds a record to a completed upload and updates its category and upload counts.
+- `PUT /api/spn/uploads/{id}/records/{recordId}`: replaces a record's field values and refreshes its searchable content.
+- `DELETE /api/spn/uploads/{id}/records/{recordId}`: deletes a record and updates its category and upload counts.
+- `GET /api/spn/uploads/{id}/excel`: streams all parsed categories and records as an `.xlsx` workbook download.
 
 Login/signup request JSON:
 
